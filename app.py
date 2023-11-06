@@ -20,10 +20,18 @@ def generate_frames():
             )
 
 
-@app.route("/")
-def index():
+@app.route("/start-streaming")
+def start():
     return Response(
         generate_frames(), mimetype="multipart/x-mixed-replace; boundary=frame"
+    )
+
+
+@app.route("/stop-streaming")
+def stop():
+    return Response(
+        # stop generate_frames
+        # return an ok response
     )
 
 
