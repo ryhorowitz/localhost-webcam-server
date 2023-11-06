@@ -1,7 +1,9 @@
 from flask import Flask, Response
+from flask_cors import CORS
 import cv2
 
 app = Flask(__name__)
+CORS(app)
 video_capture = cv2.VideoCapture(0)
 # 0 represents the default camera (your MacBook Air's webcam)
 streaming = False
