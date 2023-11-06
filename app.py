@@ -4,6 +4,7 @@ import cv2
 app = Flask(__name__)
 video_capture = cv2.VideoCapture(0)
 # 0 represents the default camera (your MacBook Air's webcam)
+streaming = False
 
 
 def generate_frames():
@@ -20,18 +21,27 @@ def generate_frames():
             )
 
 
-@app.route("/start-streaming")
-def start():
-    return Response(
-        generate_frames(), mimetype="multipart/x-mixed-replace; boundary=frame"
-    )
+@app.route("/start-streaming", methods=["GET"])
+def start_streaming():
+    global streaming
+    streaming = True
+    # Add code to start streaming from the webcam
+    # Example: use OpenCV to capture frames from the webcam and send them to the frontend
+    # return Response(
+    #     generate_frames(), mimetype="multipart/x-mixed-replace; boundary=frame"
+    # )
+    return "Streaming started", 200
 
 
 @app.route("/stop-streaming")
 def stop():
+    global streaming
+    streaming = False
     return Response(
         # stop generate_frames
         # return an ok response
+        "Streaming ended",
+        200,
     )
 
 
