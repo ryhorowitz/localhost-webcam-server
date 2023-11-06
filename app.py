@@ -1,22 +1,31 @@
+from flask import Flask, Response
 import cv2
 
-# Open a connection to the default camera (index 0)
-cap = cv2.VideoCapture(0)
+app = Flask(__name__)
+video_capture = cv2.VideoCapture(0)
+# 0 represents the default camera (your MacBook Air's webcam)
 
-while True:
-    # Capture frame-by-frame
-    ret, frame = cap.read()
 
-    # Perform image processing tasks on the frame if needed
-    # For example, you can apply filters, detect objects, etc.
+def generate_frames():
+    while True:
+        success, frame = video_capture.read()
+        if not success:
+            break
+        else:
+            _, buffer = cv2.imencode(".jpg", frame)
+            frame_bytes = buffer.tobytes()
+            yield (
+                b"--frame\r\n"
+                b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n"
+            )
 
-    # Display the resulting frame
-    cv2.imshow("Video", frame)
 
-    # Break the loop if 'q' is pressed
-    if cv2.waitKey(1) & 0xFF == ord("q"):
-        break
+@app.route("/")
+def index():
+    return Response(
+        generate_frames(), mimetype="multipart/x-mixed-replace; boundary=frame"
+    )
 
-# Release the camera and close all OpenCV windows
-cap.release()
-cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=6000, debug=True)
